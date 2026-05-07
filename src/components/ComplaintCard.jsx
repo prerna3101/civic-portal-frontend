@@ -2,7 +2,7 @@ import StatusBadge from './StatusBadge.jsx'
 
 function ComplaintCard({ complaint, actions }) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+    <article className="panel p-5 transition duration-200 hover:-translate-y-1">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
           {complaint.title || 'Complaint'}

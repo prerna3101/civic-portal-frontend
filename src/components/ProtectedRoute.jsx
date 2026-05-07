@@ -41,7 +41,7 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
       return <Navigate to="/admin" replace />
     }
 
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/user" replace />
   }
 
   // Authorized access

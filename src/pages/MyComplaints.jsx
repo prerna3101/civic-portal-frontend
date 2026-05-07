@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Search } from 'lucide-react'
 import ComplaintCard from '../components/ComplaintCard.jsx'
-import Loader from '../components/Loader.jsx'
+import EmptyState from '../components/EmptyState.jsx'
+import SkeletonCard from '../components/SkeletonCard.jsx'
 import { getMyComplaints } from '../services/complaintService.js'
 
 function MyComplaints() {
@@ -33,22 +35,34 @@ function MyComplaints() {
     [complaints, search, statusFilter],
   )
 
-  if (loading) return <Loader text="Loading complaints..." />
+  if (loading) {
+    return (
+      <section className="grid gap-4 md:grid-cols-2">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-4">
-      <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800">
+      <div className="panel p-4">
         <div className="grid gap-3 md:grid-cols-2">
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by title or description"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-          />
+          <div className="relative">
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by title or description"
+              className="input-ui pl-9"
+            />
+          </div>
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+            className="input-ui"
           >
             <option value="ALL">All Statuses</option>
             <option value="PENDING">Pending</option>
@@ -59,9 +73,7 @@ function MyComplaints() {
       </div>
 
       {filteredComplaints.length === 0 ? (
-        <div className="rounded-xl bg-white p-8 text-center text-sm text-slate-500 shadow-sm dark:bg-slate-800">
-          No complaints found.
-        </div>
+        <EmptyState title="No complaints found" description="Try changing filters or create a new complaint." />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {filteredComplaints.map((complaint) => (

@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { CheckCircle2, CircleDashed, Search } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ComplaintCard from '../components/ComplaintCard.jsx'
-import Loader from '../components/Loader.jsx'
+import EmptyState from '../components/EmptyState.jsx'
+import Modal from '../components/Modal.jsx'
+import SkeletonCard from '../components/SkeletonCard.jsx'
 import {
   getAllComplaints,
   updateComplaintStatus,
@@ -104,70 +107,46 @@ function AdminDashboard() {
 
   // LOADER
   if (loading) {
-    return <Loader text="Loading admin dashboard..." />
+    return (
+      <section className="grid gap-4 md:grid-cols-2">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </section>
+    )
   }
 
   return (
     <section className="space-y-5">
-
-      {/* TOP STATS */}
-      <div className="grid gap-4 sm:grid-cols-3">
-
-        <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-slate-800">
-          <p className="text-sm text-slate-500">
-            Total Complaints
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-slate-800 dark:text-white">
-            {complaints.length}
-          </h2>
-        </div>
-
-        <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-slate-800">
-          <p className="text-sm text-slate-500">
-            Pending
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-amber-500">
-            {
-              complaints.filter(
-                (item) => item.status === 'PENDING',
-              ).length
-            }
-          </h2>
-        </div>
-
-        <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-slate-800">
-          <p className="text-sm text-slate-500">
-            Resolved
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-emerald-500">
-            {
-              complaints.filter(
-                (item) => item.status === 'RESOLVED',
-              ).length
-            }
-          </h2>
-        </div>
+      <div className="rounded-3xl bg-hero p-7 text-white shadow-glass">
+        <h2 className="text-2xl font-semibold">Government Complaint Operations</h2>
+        <p className="mt-2 text-sm text-emerald-50/90">Review, prioritize, and update civic grievances in one place.</p>
       </div>
 
-      {/* FILTER SECTION */}
-      <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800">
-        <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="panel p-5"><p className="text-sm text-slate-500 dark:text-slate-300">Total Complaints</p><h2 className="mt-2 text-3xl font-bold">{complaints.length}</h2></div>
+        <div className="panel p-5"><p className="text-sm text-slate-500 dark:text-slate-300">Pending</p><div className="mt-2 flex items-center gap-2 text-3xl font-bold text-amber-500"><CircleDashed size={20} />{complaints.filter((item) => item.status === 'PENDING').length}</div></div>
+        <div className="panel p-5"><p className="text-sm text-slate-500 dark:text-slate-300">Resolved</p><div className="mt-2 flex items-center gap-2 text-3xl font-bold text-emerald-500"><CheckCircle2 size={20} />{complaints.filter((item) => item.status === 'RESOLVED').length}</div></div>
+      </div>
 
-          <input
-            type="text"
-            placeholder="Search complaints..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
-          />
+      <div className="panel p-4">
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="relative">
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search complaints..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-ui pl-9"
+            />
+          </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+            className="input-ui"
           >
             <option value="ALL">All Status</option>
             <option value="PENDING">Pending</option>
@@ -177,19 +156,11 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* COMPLAINTS */}
       {filteredComplaints.length === 0 ? (
-
-        <div className="rounded-xl bg-white p-10 text-center text-slate-500 shadow-sm dark:bg-slate-800">
-          No complaints found.
-        </div>
-
+        <EmptyState title="No complaints found" description="No complaints match the current search and filter." />
       ) : (
-
         <div className="grid gap-4 md:grid-cols-2">
-
           {filteredComplaints.map((complaint) => (
-
             <ComplaintCard
               key={complaint.id}
               complaint={complaint}
@@ -212,7 +183,7 @@ function AdminDashboard() {
                           status,
                         )
                       }
-                      className="rounded-md border border-slate-300 px-3 py-1 text-xs transition hover:bg-slate-100"
+                      className="btn-secondary px-3 py-1.5 text-xs"
                     >
                       {status}
                     </button>
@@ -226,53 +197,14 @@ function AdminDashboard() {
         </div>
       )}
 
-      {/* CONFIRM MODAL */}
-      {confirmState.open && (
-
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-
-          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg">
-
-            <h2 className="text-lg font-bold text-slate-800">
-              Confirm Update
-            </h2>
-
-            <p className="mt-2 text-sm text-slate-600">
-              Change complaint status to{' '}
-              <span className="font-semibold">
-                {confirmState.status}
-              </span>
-              ?
-            </p>
-
-            <div className="mt-5 flex justify-end gap-2">
-
-              <button
-                type="button"
-                onClick={() =>
-                  setConfirmState({
-                    open: false,
-                    id: null,
-                    status: '',
-                  })
-                }
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={confirmStatusChange}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
-              >
-                Confirm
-              </button>
-
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        open={confirmState.open}
+        title="Confirm status update"
+        description={`Change complaint status to ${confirmState.status}?`}
+        confirmText="Update"
+        onClose={() => setConfirmState({ open: false, id: null, status: '' })}
+        onConfirm={confirmStatusChange}
+      />
     </section>
   )
 }

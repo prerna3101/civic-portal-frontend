@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CheckCircle2, ImagePlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createComplaint } from '../services/complaintService'
 
@@ -11,6 +12,7 @@ function CreateComplaint() {
   })
 
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleChange = (e) => {
 
@@ -31,6 +33,7 @@ function CreateComplaint() {
       await createComplaint(formData)
 
       toast.success('Complaint submitted successfully')
+      setSuccess(true)
 
       setFormData({
         title: '',
@@ -54,113 +57,37 @@ function CreateComplaint() {
   }
 
   return (
+    <div className="mx-auto max-w-3xl space-y-5">
+      <section className="rounded-3xl bg-hero p-7 text-white shadow-glass">
+        <h1 className="text-2xl font-semibold">Create Complaint</h1>
+        <p className="mt-2 text-sm text-emerald-50/90">Describe the issue clearly for faster resolution.</p>
+      </section>
 
-    <div className="max-w-2xl mx-auto p-6">
-
-      <h1 className="text-3xl font-bold mb-6">
-        Create Complaint
-      </h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 bg-white shadow-md rounded-lg p-6"
-      >
-
-        {/* TITLE */}
+      <form onSubmit={handleSubmit} className="panel space-y-4 p-6">
         <div>
-
-          <label className="block mb-2 font-medium">
-            Complaint Title
-          </label>
-
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter complaint title"
-            className="w-full border p-3 rounded-lg"
-            required
-          />
+          <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Complaint Title</label>
+          <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Enter complaint title" className="input-ui" required />
         </div>
-
-        {/* CATEGORY */}
         <div>
-
-          <label className="block mb-2 font-medium">
-            Category
-          </label>
-
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-            required
-          >
-
-            <option value="">
-              Select Category
-            </option>
-
-            <option value="Road">
-              Road
-            </option>
-
-            <option value="Water">
-              Water
-            </option>
-
-            <option value="Electricity">
-              Electricity
-            </option>
-
-            <option value="Garbage">
-              Garbage
-            </option>
-
-            <option value="Other">
-              Other
-            </option>
-
+          <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
+          <select name="category" value={formData.category} onChange={handleChange} className="input-ui" required>
+            <option value="">Select Category</option>
+            <option value="Road">Road</option>
+            <option value="Water">Water</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Garbage">Garbage</option>
+            <option value="Other">Other</option>
           </select>
-
         </div>
-
-        {/* DESCRIPTION */}
         <div>
-
-          <label className="block mb-2 font-medium">
-            Description
-          </label>
-
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="5"
-            placeholder="Describe your issue..."
-            className="w-full border p-3 rounded-lg"
-            required
-          />
-
+          <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} rows="5" placeholder="Describe your issue..." className="input-ui resize-none" required />
         </div>
-
-        {/* BUTTON */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
-        >
-
-          {loading
-            ? 'Submitting...'
-            : 'Submit Complaint'}
-
+        <button type="submit" disabled={loading} className="btn-primary w-full sm:w-auto">
+          {loading ? 'Submitting...' : 'Submit Complaint'}
         </button>
-
+        {success && <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300"><CheckCircle2 size={16} />Complaint submitted successfully.</div>}
       </form>
-
     </div>
   )
 }

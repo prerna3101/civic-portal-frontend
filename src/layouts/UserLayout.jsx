@@ -1,16 +1,22 @@
 import { Outlet } from 'react-router-dom'
+import { useState } from 'react'
 import Navbar from '../components/Navbar.jsx'
+import PageTransition from '../components/PageTransition.jsx'
 import Sidebar from '../components/Sidebar.jsx'
 
 function UserLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:flex">
-        <Sidebar role="USER" />
+        <Sidebar role="USER" open={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <div className="flex-1">
-          <Navbar title="User Portal" />
+          <Navbar title="Citizen Workspace" onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="p-4 sm:p-6">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </main>
         </div>
       </div>
